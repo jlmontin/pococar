@@ -1,0 +1,2598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>POCOCAR</title>
+    <meta name="description" content="Sistema para compartir coche con acceso por PIN">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="POCOCAR">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 50%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+        
+        .container {
+            background: rgba(44, 44, 46, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            padding: 32px;
+            max-width: 420px;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .logo-emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .logo h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo p {
+            color: #8e8e93;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #8e8e93;
+            font-weight: 500;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 16px;
+            background: rgba(72, 72, 74, 0.9);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            font-size: 17px;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0a84ff;
+            background: rgba(72, 72, 74, 1);
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.3);
+        }
+        
+        .form-group input[type="password"] {
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 12px;
+            font-weight: 600;
+        }
+        
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: rgba(72, 72, 74, 0.6);
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            accent-color: #0a84ff;
+            border-radius: 6px;
+        }
+        
+        .checkbox-group label {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .error {
+            background: rgba(255, 59, 48, 0.2);
+            border: 1px solid rgba(255, 59, 48, 0.4);
+            color: #ff453a;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(10, 132, 255, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .tip {
+            text-align: center;
+            margin-top: 24px;
+            color: #636366;
+            font-size: 13px;
+        }
+        
+        .worker-panel,
+        .admin-panel {
+            display: none;
+        }
+        
+        .worker-panel.active,
+        .admin-panel.active {
+            display: block;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .panel-header h2 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff453a;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 59, 48, 0.3);
+        }
+        
+        .availability-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        
+        .day-card {
+            background: rgba(72, 72, 74, 0.8);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .day-card.selected {
+            background: rgba(10, 132, 255, 0.3);
+            border-color: #0a84ff;
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.4);
+        }
+        
+        .day-card .day-name {
+            font-weight: 600;
+            font-size: 12px;
+            color: #98989d;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .day-card.selected .day-name {
+            color: #0a84ff;
+        }
+        
+        .day-card .day-status {
+            font-size: 24px;
+        }
+        
+        .save-btn {
+            width: auto;
+            min-width: 200px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #30d158 0%, #248a3d 100%);
+            box-shadow: 0 4px 12px rgba(48, 209, 88, 0.3);
+        }
+        
+        .save-btn:hover {
+            box-shadow: 0 8px 20px rgba(48, 209, 88, 0.4);
+        }
+
+        .save-availability-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        
+        .counter-list {
+            background: rgba(72, 72, 74, 0.6);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .counter-list h3 {
+            color: #98989d;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        
+        .counter-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .counter-item:last-child {
+            border-bottom: none;
+        }
+        
+        .counter-name {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .counter-value {
+            color: #0a84ff;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .worker-schedule-info {
+            background: rgba(72, 72, 74, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .worker-schedule-info h3 {
+            color: #98989d;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .schedule-day {
+            padding: 12px;
+            margin-bottom: 12px;
+            background: rgba(44, 44, 46, 0.5);
+            border-radius: 12px;
+            border-left: 3px solid #0a84ff;
+        }
+        
+        .schedule-day.driver {
+            border-left-color: #0a84ff;
+        }
+        
+        .schedule-day.passenger {
+            border-left-color: #30d158;
+        }
+        
+        .schedule-day.off {
+            border-left-color: #8e8e93;
+        }
+        
+        .admin-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .action-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.generate {
+            background: linear-gradient(135deg, #bf5af2 0%, #9945f0 100%);
+            box-shadow: 0 4px 12px rgba(191, 90, 242, 0.3);
+        }
+        
+        .action-btn.whatsapp {
+            background: linear-gradient(135deg, #30d158 0%, #248a3d 100%);
+            box-shadow: 0 4px 12px rgba(48, 209, 88, 0.3);
+        }
+        
+        .action-btn.users {
+            background: linear-gradient(135deg, #ff9f0a 0%, #e6800a 100%);
+            box-shadow: 0 4px 12px rgba(255, 159, 10, 0.3);
+        }
+        
+        .action-btn.edit {
+            background: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+        }
+        
+        .action-btn.reset {
+            background: linear-gradient(135deg, #ff453a 0%, #d63027 100%);
+            box-shadow: 0 4px 12px rgba(255, 69, 58, 0.3);
+        }
+        
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .edit-modal.active {
+            display: flex;
+        }
+        
+        .edit-modal-content {
+            background: rgba(28, 28, 30, 0.95);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+        }
+        
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .edit-modal-header h3 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .close-modal {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff453a;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255, 59, 48, 0.3);
+        }
+        
+        .edit-form-group {
+            margin-bottom: 24px;
+        }
+        
+        .edit-form-group label {
+            display: block;
+            color: #8e8e93;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .edit-form-group select {
+            width: 100%;
+            padding: 16px;
+            background: rgba(44, 44, 46, 0.8);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            font-size: 17px;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-form-group select:focus {
+            outline: none;
+            border-color: #0a84ff;
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2);
+        }
+        
+        .workers-list {
+            background: rgba(72, 72, 74, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .worker-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .worker-checkbox:last-child {
+            border-bottom: none;
+        }
+        
+        .worker-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            accent-color: #0a84ff;
+            border-radius: 6px;
+        }
+        
+        .worker-checkbox label {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .section-title {
+            color: #98989d;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .save-edit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #30d158 0%, #248a3d 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(48, 209, 88, 0.3);
+        }
+        
+        .save-edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(48, 209, 88, 0.4);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #ff453a 0%, #d63027 100%);
+            box-shadow: 0 4px 12px rgba(255, 69, 58, 0.3);
+        }
+        
+        .reset-btn:hover {
+            box-shadow: 0 8px 20px rgba(255, 69, 58, 0.4);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+   <div class="container">
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="logo">
+            <div class="logo-emoji">👥🚘👥</div>
+            <!-- Contenedor alineado: Primero la bandera, luego el texto -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <svg xmlns="http://w3.org" viewBox="0 0 750 500" width="36" height="24" style="vertical-align: middle;">
+                    <rect width="750" height="500" fill="#c60b1e"/>
+                    <rect width="750" height="250" y="125" fill="#fbe106"/>
+                </svg>
+                <h1 style="margin: 0;">POCOCAR</h1>
+            </div>
+            <p>Compartir vehículo con compañeros</p>
+        </div>
+
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>🔑 PIN Equipo</label>
+                    <input type="password" id="pinInput" maxlength="4" placeholder="••••" required>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="isAdminCheckbox">
+                    <label for="isAdminCheckbox">🔐 Soy Administrador</label>
+                </div>
+                
+                <div class="form-group" id="userSelectGroup">
+                    <label>Tu Nombre</label>
+                    <select id="userSelect" required>
+                        <option value="">Selecciona tu nombre...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group hidden" id="adminKeyGroup">
+                    <label>Clave Admin</label>
+                    <input type="password" id="adminKeyInput" placeholder="••••••">
+                </div>
+                
+                <div id="errorMessage" class="error hidden"></div>
+                
+                <button type="submit" class="btn">
+                    <span>📲</span>
+                    <span>Entrar a la App</span>
+                </button>
+            </form>
+            
+            <div class="tip">
+                📱 Instálala como app desde tu navegador
+            </div>
+        </div>
+        
+        <!-- Worker Panel -->
+        <div id="workerPanel" class="worker-panel">
+            <div class="panel-header">
+                <h2 id="workerName">Hola, [Nombre]</h2>
+                <button class="logout-btn" onclick="logout()">Salir</button>
+            </div>
+            
+            <div style="margin-bottom: 20px; color: #ffffff; font-size: 17px; font-weight: 500;">
+                Viajes: <span id="workerCounter" style="color: #0a84ff; font-weight: 600;">0</span>
+            </div>
+            
+            <div id="workerDriverInfo" style="display: none; margin-bottom: 24px; color: #ffffff; font-size: 17px; font-weight: 500;">
+                Te toca llevar el coche: <span id="driverDaysContent"></span>
+            </div>
+            
+            <h3 style="color: #98989d; margin-bottom: 16px; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">📅 Marca tu disponibilidad para la próxima semana:</h3>
+            
+            <div class="availability-grid" style="grid-template-columns: repeat(6, 1fr);">
+                <div class="day-card" data-day="Lunes" onclick="toggleDay(this)">
+                    <div class="day-name">Lun</div>
+                    <div class="day-status">❌</div>
+                </div>
+                <div class="day-card" data-day="Martes" onclick="toggleDay(this)">
+                    <div class="day-name">Mar</div>
+                    <div class="day-status">❌</div>
+                </div>
+                <div class="day-card" data-day="Miércoles" onclick="toggleDay(this)">
+                    <div class="day-name">Mié</div>
+                    <div class="day-status">❌</div>
+                </div>
+                <div class="day-card" data-day="Jueves" onclick="toggleDay(this)">
+                    <div class="day-name">Jue</div>
+                    <div class="day-status">❌</div>
+                </div>
+                <div class="day-card" data-day="Viernes" onclick="toggleDay(this)">
+                    <div class="day-name">Vie</div>
+                    <div class="day-status">❌</div>
+                </div>
+                <div id="notWorkingBtn" class="day-card" onclick="markNotWorkingThisWeek()">
+                    <div class="day-name">No voy</div>
+                    <div class="day-status">❌</div>
+                </div>
+            </div>
+            
+            <div class="save-availability-wrap">
+                <button class="btn save-btn" onclick="saveAvailability()">
+                    <span>💾</span>
+                    <span>Guardar</span>
+                </button>
+            </div>
+            
+            <div id="workerLastSchedule" style="margin-top: 32px;">
+                <h3 id="workerWeekTitle" style="color: #98989d; margin-bottom: 16px; font-size: 15px; font-weight: 600; letter-spacing: 0.5px;">Semana</h3>
+                <div id="workerLastScheduleContent" style="background: rgba(72, 72, 74, 0.6); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                    No hay cuadrante
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel">
+            <div class="panel-header">
+                <h2>💻⚙️🔑 Panel Admin</h2>
+                <button class="logout-btn" onclick="logout()">Salir</button>
+            </div>
+            
+            <div class="admin-actions">
+                <button class="action-btn generate" onclick="generateSchedule()">
+                    🎲 Generar Turnos
+                </button>
+                <button class="action-btn whatsapp" onclick="copyToWhatsApp()">
+                    � Copiar WhatsApp
+                </button>
+                <button class="action-btn users" onclick="manageUsers()">
+                    👥 Altas/Bajas
+                </button>
+                <button class="action-btn edit" onclick="editSchedule()">
+                    ✏️ Editar Cuadrante
+                </button>
+                <button class="action-btn" style="background: linear-gradient(135deg, #bf5af2 0%, #9945f0 100%); color: white;" onclick="showHistory()">
+                    📜 Historial
+                </button>
+                <button class="action-btn" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: white;" onclick="changeCredentials()">
+                    🔐 Cambiar Credenciales
+                </button>
+                <button class="action-btn" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white;" onclick="downloadBackup()">
+                    💾 Copia de seguridad
+                </button>
+            </div>
+            
+            <div class="counter-list">
+                <h3 style="color: #98989d; font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px;">📊 Contador de viajes:</h3>
+                <div id="counterList">
+                    <div class="counter-item">
+                        <span class="counter-name">Pedro</span>
+                        <span class="counter-value">12</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-name">Javi</span>
+                        <span class="counter-value">12</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-name">Nico</span>
+                        <span class="counter-value">12</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-name">Dani</span>
+                        <span class="counter-value">13</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Último cuadrante generado -->
+            <div id="adminLastSchedule" style="display: none; margin-top: 24px;">
+                <h3 style="color: #98989d; margin-bottom: 16px; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">� ÚLTIMO CUADRANTE GENERADO</h3>
+                <div id="adminLastScheduleContent" style="background: rgba(72, 72, 74, 0.6); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Edición Visual -->
+        <div id="editModal" class="edit-modal">
+            <div class="edit-modal-content" style="max-width: 900px;">
+                <div class="edit-modal-header">
+                    <h3>✏️ Editar Cuadrante Completo</h3>
+                    <button class="close-modal" onclick="closeEditModal()">×</button>
+                </div>
+                
+                <div id="editTableSection">
+                    <div id="scheduleTable" style="overflow-x: auto; max-height: 60vh; overflow-y: auto;">
+                        <!-- Tabla se genera dinámicamente -->
+                    </div>
+                    
+                    <button class="save-edit-btn" onclick="saveTableEdit()" style="margin-top: 20px;">
+                        💾 Guardar Cambios y Ajustar Contadores
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Historial -->
+        <div id="historyModal" class="edit-modal">
+            <div class="edit-modal-content" style="max-width: 700px;">
+                <div class="edit-modal-header">
+                    <h3>📜 Historial de Cuadrantes</h3>
+                    <button class="close-modal" onclick="closeHistoryModal()">×</button>
+                </div>
+                
+                <div id="historyContent" style="max-height: 60vh; overflow-y: auto;">
+                    <!-- Historial se genera dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Gestión de Usuarios -->
+        <div id="usersModal" class="edit-modal" style="display: none;">
+            <div class="edit-modal-content" style="max-width: 500px;">
+                <div class="edit-modal-header">
+                    <h3>👥 Gestión de Usuarios</h3>
+                    <button class="close-modal" onclick="closeUsersModal()">×</button>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <p style="color: #8e8e93; margin-bottom: 12px;">Usuarios actuales:</p>
+                    <div id="currentUsersList" style="color: #ffffff; font-size: 14px; margin-bottom: 16px;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #8e8e93; font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px;">Acción:</label>
+                    <select id="userAction" style="width: 100%; padding: 12px; background: rgba(72, 72, 74, 0.9); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; color: #ffffff; font-size: 16px;">
+                        <option value="">Selecciona acción...</option>
+                        <option value="alta">Dar de alta nuevo usuario</option>
+                        <option value="baja">Dar de baja usuario existente</option>
+                    </select>
+                </div>
+                
+                <div id="userNameSection" style="margin-bottom: 20px; display: none;">
+                    <label style="color: #8e8e93; font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px;">Nombre del usuario:</label>
+                    <input type="text" id="userNameInput" placeholder="Escribe el nombre..." style="width: 100%; padding: 12px; background: rgba(72, 72, 74, 0.9); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; color: #ffffff; font-size: 16px;">
+                </div>
+                
+                <button class="save-edit-btn" onclick="executeUserAction()" style="margin-top: 12px;">
+                    ✅ Ejecutar Acción
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal de Cambio de Credenciales -->
+        <div id="credentialsModal" class="edit-modal" style="display: none;">
+            <div class="edit-modal-content" style="max-width: 500px;">
+                <div class="edit-modal-header">
+                    <h3>🔐 Cambiar Credenciales</h3>
+                    <button class="close-modal" onclick="closeCredentialsModal()">×</button>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <p style="color: #8e8e93; margin-bottom: 12px;">Credenciales actuales:</p>
+                    <div id="currentCredentials" style="color: #ffffff; font-size: 14px; margin-bottom: 16px;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #8e8e93; font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px;">Qué cambiar:</label>
+                    <select id="credentialAction" style="width: 100%; padding: 12px; background: rgba(72, 72, 74, 0.9); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; color: #ffffff; font-size: 16px;">
+                        <option value="">Selecciona qué cambiar...</option>
+                        <option value="teamPin">PIN del equipo (afecta a todos)</option>
+                        <option value="adminKey">Clave admin (solo admin)</option>
+                    </select>
+                </div>
+                
+                <div id="newCredentialSection" style="margin-bottom: 20px; display: none;">
+                    <label id="newCredentialLabel" style="color: #8e8e93; font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px;">Nuevo valor:</label>
+                    <input type="text" id="newCredentialInput" placeholder="Escribe el nuevo valor..." style="width: 100%; padding: 12px; background: rgba(72, 72, 74, 0.9); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; color: #ffffff; font-size: 16px;">
+                </div>
+                
+                <button class="save-edit-btn" onclick="executeCredentialChange()" style="margin-top: 12px;">
+                    ✅ Cambiar Credencial
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================
+        // Capa de datos: guarda todo en el SERVIDOR (base de datos SQLite)
+        // ============================================================
+        const API = {
+            token: null,
+            async call(method, url, body) {
+                const opts = { method, headers: {} };
+                if (this.token) opts.headers['Authorization'] = 'Bearer ' + this.token;
+                if (body !== undefined) {
+                    opts.headers['Content-Type'] = 'application/json';
+                    opts.body = JSON.stringify(body);
+                }
+                let res;
+                try {
+                    res = await fetch(url, opts);
+                } catch (e) {
+                    throw new Error('No se puede conectar con el servidor. Comprueba tu conexión.');
+                }
+                let data = {};
+                try { data = await res.json(); } catch (e) { /* sin cuerpo */ }
+                if (!res.ok) {
+                    const err = new Error(data.error || ('Error ' + res.status));
+                    err.status = res.status;
+                    throw err;
+                }
+                return data;
+            }
+        };
+
+        const store = {
+            cache: {},
+            queue: [],
+            chain: Promise.resolve(true),
+            version: 0,
+            timer: null,
+
+            getItem(key) {
+                return Object.prototype.hasOwnProperty.call(this.cache, key) ? this.cache[key] : null;
+            },
+            setItem(key, value) {
+                value = String(value);
+                this.cache[key] = value;
+                this._push({ op: 'set', key, value });
+            },
+            removeItem(key) {
+                delete this.cache[key];
+                this._push({ op: 'remove', key });
+            },
+            // Las escrituras hechas en el mismo instante viajan juntas en una sola transacción
+            _push(op) {
+                this.version++;
+                this.queue.push(op);
+                if (!this.timer) this.timer = setTimeout(() => this.settle(), 0);
+            },
+            // Envía lo pendiente y espera a que termine. Devuelve true si todo se guardó.
+            settle() {
+                clearTimeout(this.timer);
+                this.timer = null;
+                const ops = this.queue.splice(0);
+                if (ops.length > 0) {
+                    this.chain = this.chain.then(async () => {
+                        try {
+                            await API.call('POST', '/api/batch', { ops });
+                            return true;
+                        } catch (e) {
+                            if (e.status === 401) { handleSessionExpired(); return false; }
+                            alert('⚠️ No se pudo guardar en el servidor:\n' + e.message + '\n\nSe recargarán los datos del servidor.');
+                            syncFromServer(true);
+                            return false;
+                        }
+                    });
+                }
+                return this.chain;
+            },
+            // Descarga el estado del servidor. Devuelve true si hubo cambios.
+            async refresh(full = true) {
+                await this.settle();
+                const v = this.version;
+                const r = await API.call('GET', '/api/state' + (full ? '' : '?history=0'));
+                if (v !== this.version || this.queue.length > 0) return false; // hubo escrituras mientras tanto
+                const next = r.kv;
+                if (!full && this.cache.scheduleHistory !== undefined) next.scheduleHistory = this.cache.scheduleHistory;
+                const changed = JSON.stringify(next) !== JSON.stringify(this.cache);
+                this.cache = next;
+                return changed;
+            },
+            clear() {
+                this.cache = {};
+                this.queue = [];
+            }
+        };
+
+        function handleSessionExpired() {
+            if (!API.token) return;
+            alert('⏰ Tu sesión ha caducado. Vuelve a entrar.');
+            logout();
+        }
+
+        let availabilityDirty = false;
+
+        // Sincronización periódica con el servidor (otros dispositivos pueden haber cambiado datos)
+        async function syncFromServer(full = false) {
+            if (!API.token) return;
+            try {
+                const changed = await store.refresh(full);
+                if (!changed && !full) return;
+                if (isAdmin) {
+                    loadCounters();
+                    displayAdminLastSchedule();
+                } else if (currentUser) {
+                    loadWorkerCounter();
+                    displayWorkerSchedule();
+                    if (!availabilityDirty) loadAvailability();
+                }
+            } catch (e) {
+                if (e.status === 401) handleSessionExpired();
+                // Otros errores (sin conexión): se reintenta en el siguiente ciclo
+            }
+        }
+        setInterval(() => syncFromServer(false), 30000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) syncFromServer(false); });
+
+        // Rellena el desplegable de login con los usuarios del servidor
+        async function loadUserOptions() {
+            const select = document.getElementById('userSelect');
+            try {
+                const data = await API.call('GET', '/api/users');
+                const first = select.options[0];
+                select.innerHTML = '';
+                select.appendChild(first);
+                data.users.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        async function downloadBackup() {
+            try {
+                const res = await fetch('/api/backup', { headers: { 'Authorization': 'Bearer ' + API.token } });
+                if (!res.ok) throw new Error('No se pudo generar la copia (' + res.status + ')');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'pococar-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+            } catch (e) {
+                alert('❌ ' + e.message);
+            }
+        }
+
+        // State
+        let currentUser = null;
+        let isAdmin = false;
+        let selectedDays = [];
+        
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const workerPanel = document.getElementById('workerPanel');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginForm = document.getElementById('loginForm');
+        const isAdminCheckbox = document.getElementById('isAdminCheckbox');
+        const userSelectGroup = document.getElementById('userSelectGroup');
+        const adminKeyGroup = document.getElementById('adminKeyGroup');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        loadUserOptions();
+
+        // Event Listeners
+        isAdminCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                userSelectGroup.classList.add('hidden');
+                adminKeyGroup.classList.remove('hidden');
+                document.getElementById('userSelect').required = false;
+                document.getElementById('adminKeyInput').required = true;
+            } else {
+                userSelectGroup.classList.remove('hidden');
+                adminKeyGroup.classList.add('hidden');
+                document.getElementById('userSelect').required = true;
+                document.getElementById('adminKeyInput').required = false;
+            }
+        });
+        
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            errorMessage.classList.add('hidden');
+
+            const pin = document.getElementById('pinInput').value;
+            const selectedUser = document.getElementById('userSelect').value;
+            const adminKey = document.getElementById('adminKeyInput').value;
+            const wantsAdmin = isAdminCheckbox.checked;
+
+            if (!wantsAdmin && !selectedUser) {
+                showError('Selecciona tu nombre');
+                return;
+            }
+
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            try {
+                const res = await API.call('POST', '/api/login', {
+                    pin, admin: wantsAdmin, user: selectedUser, adminKey
+                });
+                API.token = res.token;
+                store.clear();
+                await store.refresh(true);
+                isAdmin = res.role === 'admin';
+                currentUser = isAdmin ? 'Admin' : res.user;
+            } catch (err) {
+                API.token = null;
+                showError(err.message);
+                return;
+            } finally {
+                submitBtn.disabled = false;
+            }
+
+            if (isAdmin) {
+                showAdminPanel();
+            } else {
+                showWorkerPanel();
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+        
+        function showWorkerPanel() {
+            console.log('Mostrando panel de trabajador para:', currentUser);
+            loginScreen.style.display = 'none';
+            workerPanel.style.display = 'block';
+            adminPanel.style.display = 'none';
+            document.getElementById('workerName').textContent = `Hola, ${currentUser}`;
+            
+            // Cargar contador personal
+            loadWorkerCounter();
+            
+            // Cargar disponibilidad
+            loadAvailability();
+            
+            // Mostrar cuadrante si está generado
+            displayWorkerSchedule();
+        }
+        
+        function loadWorkerCounter() {
+            const counters = loadCountersFromStorage();
+            const workerCounter = document.getElementById('workerCounter');
+            
+            if (counters[currentUser]) {
+                workerCounter.textContent = counters[currentUser];
+            } else {
+                workerCounter.textContent = '0';
+            }
+        }
+        
+        function getDayRoles(dayData) {
+            if (!dayData) {
+                return { conductores: [], pasajeros: [] };
+            }
+            return {
+                conductores: dayData.conductores || dayData.conductors || [],
+                pasajeros: dayData.pasajeros || dayData.passengers || []
+            };
+        }
+
+        function joinSpanishList(items) {
+            if (!items || items.length === 0) {
+                return '';
+            }
+            if (items.length === 1) {
+                return items[0];
+            }
+            if (items.length === 2) {
+                return `${items[0]} y ${items[1]}`;
+            }
+            return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+        }
+
+        function getNextWeekMonday(fromDate = new Date()) {
+            const d = new Date(fromDate);
+            d.setHours(0, 0, 0, 0);
+            const day = d.getDay();
+            const daysUntilMonday = day === 0 ? 1 : ((8 - day) % 7) || 7;
+            d.setDate(d.getDate() + daysUntilMonday);
+            return d;
+        }
+
+        function formatWeekRange(mondayDate) {
+            const monday = new Date(mondayDate);
+            const friday = new Date(monday);
+            friday.setDate(monday.getDate() + 4);
+            const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            const startDay = monday.getDate();
+            const endDay = friday.getDate();
+            const startMonth = months[monday.getMonth()];
+            const endMonth = months[friday.getMonth()];
+            if (monday.getMonth() === friday.getMonth()) {
+                return `Semana del ${startDay} al ${endDay} de ${endMonth}`;
+            }
+            return `Semana del ${startDay} de ${startMonth} al ${endDay} de ${endMonth}`;
+        }
+
+        function getScheduleWeekStart(scheduleData) {
+            if (scheduleData && scheduleData.weekStart) {
+                return new Date(scheduleData.weekStart);
+            }
+            const savedDate = store.getItem('scheduleDate');
+            return getNextWeekMonday(savedDate ? new Date(savedDate) : new Date());
+        }
+
+        function displayWorkerSchedule() {
+            const savedSchedule = store.getItem('currentSchedule');
+            const driverInfo = document.getElementById('workerDriverInfo');
+            const driverDaysContent = document.getElementById('driverDaysContent');
+            const weekTitle = document.getElementById('workerWeekTitle');
+            const lastScheduleContent = document.getElementById('workerLastScheduleContent');
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            
+            if (!savedSchedule) {
+                driverInfo.style.display = 'none';
+                weekTitle.textContent = 'Cuadrante';
+                lastScheduleContent.textContent = 'No hay cuadrante';
+                return;
+            }
+            
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule || {};
+            const driverDays = [];
+            
+            days.forEach(day => {
+                const roles = getDayRoles(schedule[day]);
+                if (roles.conductores.includes(currentUser)) {
+                    driverDays.push(day);
+                }
+            });
+            
+            driverInfo.style.display = 'block';
+            driverDaysContent.textContent = driverDays.length > 0
+                ? joinSpanishList(driverDays)
+                : 'ningún día';
+            
+            weekTitle.textContent = formatWeekRange(getScheduleWeekStart(scheduleData));
+            
+            let html = '';
+            days.forEach(day => {
+                const roles = getDayRoles(schedule[day]);
+                const isDriver = roles.conductores.includes(currentUser);
+                const isPassenger = roles.pasajeros.includes(currentUser);
+                
+                let roleText = '';
+                let roleClass = '';
+                if (isDriver) {
+                    roleText = '🚗 Conductor';
+                    roleClass = 'driver';
+                } else if (isPassenger) {
+                    roleText = '👥 Pasajero';
+                    roleClass = 'passenger';
+                } else {
+                    roleText = '🏠 No trabaja';
+                    roleClass = 'off';
+                }
+                
+                html += `
+                    <div class="schedule-day ${roleClass}">
+                        <div style="color: #ffffff; font-weight: 600; font-size: 16px; margin-bottom: 4px;">📅 ${day}</div>
+                        <div style="color: #ffffff; font-size: 14px;">${roleText}</div>
+                        ${isDriver || isPassenger ? `
+                            <div style="color: #98989d; font-size: 12px; margin-top: 8px;">
+                                <div style="margin-bottom: 4px;">🚗 ${roles.conductores.join(', ') || 'Ninguno'}</div>
+                                <div>👥 ${roles.pasajeros.join(', ') || 'Ninguno'}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            lastScheduleContent.innerHTML = html || 'No hay cuadrante';
+        }
+        
+        function showAdminPanel() {
+            console.log('Mostrando panel de admin');
+            loginScreen.style.display = 'none';
+            workerPanel.style.display = 'none';
+            adminPanel.style.display = 'block';
+            loadCounters();
+            displayAdminLastSchedule();
+        }
+        
+        function displayAdminLastSchedule() {
+            const savedSchedule = store.getItem('currentSchedule');
+            const lastSchedule = document.getElementById('adminLastSchedule');
+            const lastScheduleContent = document.getElementById('adminLastScheduleContent');
+            
+            if (!savedSchedule) {
+                lastSchedule.style.display = 'none';
+                return;
+            }
+            
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule;
+            
+            lastSchedule.style.display = 'block';
+            
+            let html = '';
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            
+            days.forEach(day => {
+                const dayData = schedule[day];
+                if (!dayData) return;
+                
+                html += `
+                    <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                        <div style="color: #0a84ff; font-weight: 600; font-size: 16px; margin-bottom: 8px;">📅 ${day}</div>
+                        <div style="color: #98989d; font-size: 12px; margin-top: 8px;">
+                            <div style="margin-bottom: 4px;">🚗 Conductores: ${dayData.conductores.join(', ') || 'Ninguno'}</div>
+                            <div>👥 Pasajeros: ${dayData.pasajeros.join(', ') || 'Ninguno'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lastScheduleContent.innerHTML = html;
+        }
+        
+        function logout() {
+            console.log('Cerrando sesión');
+            if (API.token) { API.call('POST', '/api/logout').catch(() => {}); }
+            API.token = null;
+            store.clear();
+            availabilityDirty = false;
+            loadUserOptions();
+            currentUser = null;
+            isAdmin = false;
+            selectedDays = [];
+            
+            // Reset form
+            document.getElementById('pinInput').value = '';
+            document.getElementById('userSelect').value = '';
+            document.getElementById('adminKeyInput').value = '';
+            isAdminCheckbox.checked = false;
+            
+            // Reset checkbox and show/hide groups
+            userSelectGroup.classList.remove('hidden');
+            adminKeyGroup.classList.add('hidden');
+            document.getElementById('userSelect').required = true;
+            document.getElementById('adminKeyInput').required = false;
+            
+            // Reset error message
+            errorMessage.classList.add('hidden');
+            
+            // Show login screen
+            workerPanel.style.display = 'none';
+            adminPanel.style.display = 'none';
+            loginScreen.style.display = 'block';
+            
+            // Reset day cards
+            document.querySelectorAll('.day-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.day-status').textContent = '❌';
+            });
+            
+            const notWorkingBtn = document.getElementById('notWorkingBtn');
+            if (notWorkingBtn) {
+                notWorkingBtn.classList.remove('selected');
+                notWorkingBtn.style.background = '';
+                notWorkingBtn.style.boxShadow = '';
+            }
+            
+            console.log('Sesión cerrada correctamente');
+        }
+        
+        function toggleDay(card) {
+            const day = card.dataset.day;
+            const statusIcon = card.querySelector('.day-status');
+            availabilityDirty = true;
+            
+            // Desmarcar "No voy esta semana" si se marca un día
+            const notWorkingBtn = document.getElementById('notWorkingBtn');
+            if (store.getItem(`notWorking_${currentUser}`) === 'true') {
+                store.removeItem(`notWorking_${currentUser}`);
+                notWorkingBtn.classList.remove('selected');
+                notWorkingBtn.querySelector('.day-status').textContent = '❌';
+            }
+            
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                statusIcon.textContent = '❌';
+                selectedDays = selectedDays.filter(d => d !== day);
+            } else {
+                card.classList.add('selected');
+                statusIcon.textContent = '✅';
+                selectedDays.push(day);
+            }
+        }
+        
+        async function saveAvailability() {
+            const notWorking = store.getItem(`notWorking_${currentUser}`);
+            
+            if (selectedDays.length === 0 && notWorking !== 'true') {
+                alert('⚠️ Por favor, selecciona al menos un día de trabajo o marca "No voy esta semana"');
+                return;
+            }
+            
+            // Guardar disponibilidad
+            store.setItem(`availability_${currentUser}`, JSON.stringify(selectedDays));
+            const saved = await store.settle();
+            if (!saved) return;
+            availabilityDirty = false;
+            
+            if (notWorking === 'true') {
+                alert('✅ Guardado: No voy esta semana');
+            } else {
+                alert(`✅ Disponibilidad guardada: ${selectedDays.join(', ')}`);
+            }
+        }
+        
+        function markNotWorkingThisWeek() {
+            availabilityDirty = true;
+            const notWorkingBtn = document.getElementById('notWorkingBtn');
+            const isCurrentlyMarked = store.getItem(`notWorking_${currentUser}`) === 'true';
+            
+            if (isCurrentlyMarked) {
+                // Desmarcar "No voy esta semana"
+                store.removeItem(`notWorking_${currentUser}`);
+                notWorkingBtn.classList.remove('selected');
+                notWorkingBtn.querySelector('.day-status').textContent = '❌';
+            } else {
+                // Marcar "No voy esta semana"
+                // Desmarcar todos los días excepto el botón de no voy
+                selectedDays = [];
+                document.querySelectorAll('.day-card').forEach(card => {
+                    if (card.id !== 'notWorkingBtn') {
+                        card.classList.remove('selected');
+                        card.querySelector('.day-status').textContent = '❌';
+                    }
+                });
+                
+                // Guardar marcador de "no voy esta semana"
+                store.setItem(`notWorking_${currentUser}`, 'true');
+                
+                // Marcar visualmente el botón con estilo day-card
+                notWorkingBtn.classList.add('selected');
+                notWorkingBtn.querySelector('.day-status').textContent = '✅';
+            }
+        }
+
+        function loadAvailability() {
+            // Verificar si está marcado como "no voy esta semana"
+            const notWorking = store.getItem(`notWorking_${currentUser}`);
+            const notWorkingBtn = document.getElementById('notWorkingBtn');
+
+            if (notWorking === 'true') {
+                // Si está marcado como "no voy", desmarcar todos los días
+                selectedDays = [];
+                document.querySelectorAll('.day-card').forEach(card => {
+                    if (card.id !== 'notWorkingBtn') {
+                        card.classList.remove('selected');
+                        card.querySelector('.day-status').textContent = '❌';
+                    }
+                });
+                
+                // Marcar visualmente el botón con estilo day-card
+                notWorkingBtn.classList.add('selected');
+                notWorkingBtn.querySelector('.day-status').textContent = '✅';
+                return;
+            } else {
+                // Desmarcar visualmente el botón
+                notWorkingBtn.classList.remove('selected');
+                notWorkingBtn.querySelector('.day-status').textContent = '❌';
+            }
+
+            // Cargar disponibilidad normal
+            availabilityDirty = false;
+            const saved = store.getItem(`availability_${currentUser}`);
+            if (!saved) {
+                selectedDays = [];
+                document.querySelectorAll('.day-card').forEach(card => {
+                    if (card.id !== 'notWorkingBtn') {
+                        card.classList.remove('selected');
+                        card.querySelector('.day-status').textContent = '❌';
+                    }
+                });
+            }
+            if (saved) {
+                selectedDays = JSON.parse(saved);
+                
+                document.querySelectorAll('.day-card').forEach(card => {
+                    const day = card.dataset.day;
+                    if (!day) {
+                        return;
+                    }
+                    const statusIcon = card.querySelector('.day-status');
+                    
+                    if (selectedDays.includes(day)) {
+                        card.classList.add('selected');
+                        statusIcon.textContent = '✅';
+                    } else {
+                        card.classList.remove('selected');
+                        statusIcon.textContent = '❌';
+                    }
+                });
+            }
+        }
+        
+        function loadCounters() {
+            const counters = loadCountersFromStorage();
+            
+            const counterList = document.getElementById('counterList');
+            counterList.innerHTML = '';
+            
+            Object.entries(counters).forEach(([name, count]) => {
+                const item = document.createElement('div');
+                item.className = 'counter-item';
+                item.innerHTML = `
+                    <span class="counter-name">${name}</span>
+                    <span class="counter-value">${count}</span>
+                `;
+                counterList.appendChild(item);
+            });
+        }
+        
+        async function generateSchedule() {
+            console.log('Generando turnos equitativos...');
+            try {
+                await store.refresh(true);
+            } catch (e) {
+                if (e.status === 401) { handleSessionExpired(); return; }
+                alert('❌ No se pudo leer la disponibilidad del servidor:\n' + e.message);
+                return;
+            }
+            
+            // Obtener todos los trabajadores
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            
+            console.log('Trabajadores encontrados:', allWorkers);
+            
+            // Obtener disponibilidad de todos los trabajadores
+            const allAvailability = getAllWorkersAvailability();
+            
+            console.log('Disponibilidad:', allAvailability);
+            
+            // Validar disponibilidad - NO permitir generar si falta disponibilidad
+            const missingAvailability = [];
+            
+            allWorkers.forEach(worker => {
+                const availability = allAvailability[worker];
+                const notWorking = store.getItem(`notWorking_${worker}`);
+                
+                console.log(`Verificando ${worker}: availability=${availability}, notWorking=${notWorking}`);
+                
+                if (availability.length === 0 && notWorking !== 'true') {
+                    missingAvailability.push(worker);
+                }
+            });
+            
+            // Si hay faltantes, mostrar mensaje y NO generar
+            if (missingAvailability.length > 0) {
+                let warningMessage = '⚠️ FALTAN MARCAR DISPONIBILIDAD\n\n';
+                warningMessage += 'No se puede generar el cuadrante hasta que todos marquen su disponibilidad.\n\n';
+                warningMessage += 'Faltan marcar disponibilidad:\n';
+                missingAvailability.forEach(worker => {
+                    warningMessage += `• ${worker}\n`;
+                });
+                warningMessage += '\n¿Quieres copiar este mensaje para WhatsApp?';
+                
+                if (confirm(warningMessage)) {
+                    let whatsappMessage = '⚠️ FALTAN MARCAR DISPONIBILIDAD\n\n';
+                    whatsappMessage += 'Faltan marcar disponibilidad:\n';
+                    missingAvailability.forEach(worker => {
+                        whatsappMessage += `• ${worker}\n`;
+                    });
+                    
+                    navigator.clipboard.writeText(whatsappMessage).then(() => {
+                        alert('✅ Mensaje copiado al portapapeles');
+                    }).catch(() => {
+                        alert('❌ Error al copiar - Tu navegador no soporta esta función');
+                    });
+                }
+                
+                // NO generar si falta disponibilidad
+                return;
+            }
+            
+            if (Object.keys(allAvailability).length === 0) {
+                alert('⚠️ No hay disponibilidad de trabajadores para generar turnos');
+                return;
+            }
+            
+            // Cargar contadores actuales
+            const countersCurrent = loadCountersFromStorage();
+            
+            // Verificar ausencias completas de la semana anterior y ajustar contadores
+            const adjustedCounters = adjustCountersForAbsences(countersCurrent, allAvailability);
+            
+            // Generar turnos equitativos
+            const schedule = generateFairSchedule(allAvailability, adjustedCounters);
+            
+            // Guardar el cuadrante generado en historial
+            saveToHistory(schedule);
+            
+            // Guardar el cuadrante generado
+            saveSchedule(schedule);
+            
+            // Actualizar contadores
+            saveCountersToStorage(schedule.newCounters);
+            
+            // Reiniciar marcadores de disponibilidad
+            resetAllAvailability();
+            
+            // Mostrar resultado
+            displaySchedule(schedule);
+            
+            // Actualizar displays de último cuadrante
+            displayWorkerSchedule();
+            displayAdminLastSchedule();
+            
+            alert('✅ Turnos generados con éxito\n\nLos marcadores de disponibilidad se han reiniciado para la próxima semana.');
+        }
+        
+        function resetAllAvailability() {
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            
+            allWorkers.forEach(worker => {
+                // Limpiar disponibilidad
+                store.removeItem(`availability_${worker}`);
+                // Limpiar marcador de "no va esta semana"
+                store.removeItem(`notWorking_${worker}`);
+            });
+            
+            console.log('Marcadores de disponibilidad reiniciados');
+        }
+        
+        function saveToHistory(scheduleData) {
+            const history = JSON.parse(store.getItem('scheduleHistory') || '[]');
+            
+            // Guardar estado anterior de contadores para poder restaurar
+            const oldCounters = loadCountersFromStorage();
+            
+            // Guardar disponibilidad de todos los trabajadores antes de generar
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            const availabilityBefore = {};
+            const notWorkingBefore = {};
+            
+            allWorkers.forEach(worker => {
+                const availability = store.getItem(`availability_${worker}`);
+                const notWorking = store.getItem(`notWorking_${worker}`);
+                
+                if (availability) {
+                    availabilityBefore[worker] = JSON.parse(availability);
+                }
+                
+                if (notWorking === 'true') {
+                    notWorkingBefore[worker] = true;
+                }
+            });
+            
+            const historyEntry = {
+                date: new Date().toISOString(),
+                schedule: scheduleData.schedule,
+                counters: scheduleData.newCounters,
+                previousCounters: oldCounters,
+                availabilityBefore: availabilityBefore,
+                notWorkingBefore: notWorkingBefore
+            };
+            
+            history.push(historyEntry);
+            
+            // Guardar solo los últimos 50 registros
+            if (history.length > 50) {
+                history.shift();
+            }
+            
+            store.setItem('scheduleHistory', JSON.stringify(history));
+        }
+        
+        function getAllWorkersAvailability() {
+            const counters = loadCountersFromStorage();
+            const workers = Object.keys(counters);
+            const availability = {};
+            
+            workers.forEach(worker => {
+                const saved = store.getItem(`availability_${worker}`);
+                if (saved) {
+                    availability[worker] = JSON.parse(saved);
+                } else {
+                    availability[worker] = [];
+                }
+            });
+            
+            return availability;
+        }
+        
+        function loadCountersFromStorage() {
+            const saved = store.getItem('driverCounters');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            
+            // Contadores iniciales - usuarios predefinidos ordenados alfabéticamente con contadores a 0
+            return {
+                'Aris': 0,
+                'Dani': 0,
+                'Jesus S': 0,
+                'Javi': 0,
+                'Lino': 0,
+                'Miguel': 0,
+                'Montero': 0,
+                'Nico': 0,
+                'Peri': 0,
+                'Pedro': 0,
+                'Roberto': 0,
+                'Susi': 0,
+                'Toni': 0
+            };
+        }
+        
+        function adjustCountersForAbsences(counters, currentAvailability) {
+            console.log('Ajustando contadores por ausencias...');
+            
+            const adjustedCounters = { ...counters };
+            const workers = Object.keys(currentAvailability);
+            
+            // Verificar quién trabajó 0 días esta semana
+            const absentWorkers = workers.filter(worker => 
+                currentAvailability[worker].length === 0
+            );
+            
+            if (absentWorkers.length > 0) {
+                // Encontrar el contador mínimo entre los que SÍ trabajaron
+                const activeWorkers = workers.filter(worker => 
+                    currentAvailability[worker].length > 0
+                );
+                
+                if (activeWorkers.length > 0) {
+                    const minActiveCounter = Math.min(
+                        ...activeWorkers.map(w => adjustedCounters[w])
+                    );
+                    
+                    // Ajustar ausentes al mínimo de los activos
+                    absentWorkers.forEach(worker => {
+                        console.log(`Ajustando contador de ${worker} de ${adjustedCounters[worker]} a ${minActiveCounter} (ausencia completa)`);
+                        adjustedCounters[worker] = minActiveCounter;
+                    });
+                }
+            }
+            
+            return adjustedCounters;
+        }
+        
+        function generateFairSchedule(availability, counters) {
+            console.log('Generando cuadrante equitativo...');
+            
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            const schedule = {};
+            const newCounters = { ...counters };
+            
+            days.forEach(day => {
+                // Obtener trabajadores que van ese día
+                const workersThatDay = Object.keys(availability).filter(worker => 
+                    availability[worker].includes(day)
+                );
+                
+                if (workersThatDay.length === 0) {
+                    schedule[day] = { conductores: [], pasajeros: [] };
+                    return;
+                }
+                
+                // Determinar número de conductores necesarios
+                let conductoresNeeded = 1;
+                if (workersThatDay.length <= 5) {
+                    conductoresNeeded = 1;
+                } else if (workersThatDay.length <= 10) {
+                    conductoresNeeded = 2;
+                } else {
+                    conductoresNeeded = 3;
+                }
+                
+                // Seleccionar conductores equitativamente
+                const conductores = selectFairDrivers(workersThatDay, conductoresNeeded, newCounters);
+                
+                // Actualizar contadores
+                conductores.forEach(conductor => {
+                    newCounters[conductor]++;
+                });
+                
+                // Determinar pasajeros
+                const pasajeros = workersThatDay.filter(w => !conductores.includes(w));
+                
+                schedule[day] = {
+                    conductores: conductores,
+                    pasajeros: pasajeros
+                };
+            });
+            
+            return { schedule, newCounters };
+        }
+        
+        function selectFairDrivers(availableWorkers, needed, counters) {
+            const selected = [];
+            const available = [...availableWorkers];
+            
+            while (selected.length < needed && available.length > 0) {
+                // Ordenar por contador (menor contador primero)
+                available.sort((a, b) => counters[a] - counters[b]);
+                
+                // En caso de empate, dar prioridad a quien más días trabaje esta semana
+                const allAvailability = getAllWorkersAvailability();
+                
+                // Agrupar por mismo contador
+                const minCounter = counters[available[0]];
+                const sameCounterWorkers = available.filter(w => counters[w] === minCounter);
+                
+                if (sameCounterWorkers.length > 1) {
+                    // Empate: prioridad a quien más días trabaje
+                    sameCounterWorkers.sort((a, b) => {
+                        const daysA = allAvailability[a].length;
+                        const daysB = allAvailability[b].length;
+                        return daysB - daysA; // Más días primero
+                    });
+                }
+                
+                // Seleccionar el primero
+                const selectedDriver = sameCounterWorkers[0];
+                selected.push(selectedDriver);
+                
+                // Eliminar de disponibles
+                const index = available.indexOf(selectedDriver);
+                available.splice(index, 1);
+            }
+            
+            return selected;
+        }
+        
+        function saveSchedule(scheduleData) {
+            if (!scheduleData.weekStart) {
+                scheduleData.weekStart = getNextWeekMonday().toISOString();
+            }
+            store.setItem('currentSchedule', JSON.stringify(scheduleData));
+            store.setItem('scheduleDate', new Date().toISOString());
+        }
+        
+        function saveCountersToStorage(counters) {
+            store.setItem('driverCounters', JSON.stringify(counters));
+        }
+        
+        function displaySchedule(scheduleData) {
+            const schedule = scheduleData.schedule;
+            const counters = scheduleData.newCounters;
+            
+            // Actualizar display de contadores
+            const counterList = document.getElementById('counterList');
+            counterList.innerHTML = '';
+            
+            Object.entries(counters).forEach(([name, count]) => {
+                const item = document.createElement('div');
+                item.className = 'counter-item';
+                item.innerHTML = `
+                    <span class="counter-name">${name}</span>
+                    <span class="counter-value">${count}</span>
+                `;
+                counterList.appendChild(item);
+            });
+            
+            // Mostrar mensaje de cuadrante generado
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            let summary = '✅ CUADRANTE GENERADO CON ÉXITO:\n\n';
+            days.forEach(day => {
+                const dayData = schedule[day];
+                if (dayData) {
+                    summary += `${day}: 🚗 ${dayData.conductores.join(', ') || 'Ninguno'} | 👥 ${dayData.pasajeros.join(', ') || 'Ninguno'}\n`;
+                }
+            });
+            
+            alert(summary);
+            
+            // Mostrar cuadrante en consola para debug
+            console.log('Cuadrante generado:', schedule);
+        }
+        
+        function copyToWhatsApp() {
+            const savedSchedule = store.getItem('currentSchedule');
+            
+            if (!savedSchedule) {
+                alert('📲 Todavía no hay cuadrante generado.\n\nGenera el cuadrante primero para poder copiarlo a WhatsApp.');
+                return;
+            }
+            
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule;
+            
+            let scheduleText = '🚗 CUADRANTE SEMANAL\n\n';
+            
+            const dayEmojis = {
+                'Lunes': '📅',
+                'Martes': '📅',
+                'Miércoles': '📅',
+                'Jueves': '📅',
+                'Viernes': '📅'
+            };
+            
+            Object.entries(schedule).forEach(([day, data]) => {
+                const conductores = data.conductores.join(', ') || 'Sin conductores';
+                const pasajeros = data.pasajeros.join(', ') || 'Sin pasajeros';
+                const emoji = dayEmojis[day] || '📅';
+                
+                scheduleText += `${emoji} ${day}:\n`;
+                scheduleText += `   🚗 Conductor: ${conductores}\n`;
+                scheduleText += `   👥 Pasajeros: ${pasajeros}\n\n`;
+            });
+            
+            scheduleText += 'Generado con POCOCAR 🚀';
+            
+            navigator.clipboard.writeText(scheduleText).then(() => {
+                alert('✅ Cuadrante copiado al portapapeles\n\n' + scheduleText);
+            }).catch(() => {
+                // Fallback para navegadores que no soportan clipboard API
+                const textarea = document.createElement('textarea');
+                textarea.value = scheduleText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                alert('✅ Cuadrante copiado al portapapeles\n\n' + scheduleText);
+            });
+        }
+        
+        async function manageUsers() {
+            try { await store.refresh(true); } catch (e) { alert('❌ ' + e.message); return; }
+            const counters = loadCountersFromStorage();
+            const currentUsers = Object.keys(counters);
+            
+            // Mostrar modal
+            document.getElementById('currentUsersList').textContent = currentUsers.join(', ');
+            document.getElementById('userAction').value = '';
+            document.getElementById('userNameSection').style.display = 'none';
+            document.getElementById('userNameInput').value = '';
+            document.getElementById('usersModal').style.display = 'block';
+        }
+        
+        function closeUsersModal() {
+            document.getElementById('usersModal').style.display = 'none';
+        }
+        
+        async function executeUserAction() {
+            const action = document.getElementById('userAction').value;
+            const userName = document.getElementById('userNameInput').value.trim();
+            
+            if (!action) {
+                alert('⚠️ Selecciona una acción');
+                return;
+            }
+            
+            try { await store.refresh(true); } catch (e) { alert('❌ ' + e.message); return; }
+            const counters = loadCountersFromStorage();
+            const currentUsers = Object.keys(counters);
+            
+            if (action === 'alta') {
+                if (!userName) {
+                    alert('⚠️ Escribe el nombre del usuario');
+                    return;
+                }
+                
+                if (currentUsers.includes(userName)) {
+                    alert('⚠️ El usuario ya existe');
+                    return;
+                }
+                
+                // Nuevo usuario empieza con el contador mínimo actual
+                const minCounter = Math.min(...Object.values(counters));
+                counters[userName] = minCounter;
+                
+                saveCountersToStorage(counters);
+                
+                await store.settle();
+                
+                alert(`✅ Usuario ${userName} dado de alta con contador ${minCounter}`);
+                loadCounters();
+                closeUsersModal();
+                
+            } else if (action === 'baja') {
+                if (!userName) {
+                    alert('⚠️ Escribe el nombre del usuario');
+                    return;
+                }
+                
+                if (!currentUsers.includes(userName)) {
+                    alert('⚠️ El usuario no existe');
+                    return;
+                }
+                
+                if (confirm(`¿Estás seguro de dar de baja a ${userName}?`)) {
+                    delete counters[userName];
+                    store.removeItem(`availability_${userName}`);
+                    store.removeItem(`notWorking_${userName}`);
+                    saveCountersToStorage(counters);
+                    
+                    await store.settle();
+                    
+                    alert(`✅ Usuario ${userName} dado de baja`);
+                    loadCounters();
+                    closeUsersModal();
+                }
+            }
+        }
+        
+        // Mostrar campo de nombre cuando se selecciona acción
+        document.getElementById('userAction').addEventListener('change', function() {
+            const action = this.value;
+            const nameSection = document.getElementById('userNameSection');
+            
+            if (action === 'alta' || action === 'baja') {
+                nameSection.style.display = 'block';
+            } else {
+                nameSection.style.display = 'none';
+            }
+        });
+        
+        function editSchedule() {
+            const savedSchedule = store.getItem('currentSchedule');
+            
+            if (!savedSchedule) {
+                alert('✏️ Todavía no hay cuadrante generado.\n\nGenera el cuadrante primero para poder editarlo.');
+                return;
+            }
+            
+            document.getElementById('editModal').classList.add('active');
+            generateEditTable();
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+        
+        function loadDayForEdit() {
+            const day = document.getElementById('editDaySelect').value;
+            
+            if (!day) {
+                document.getElementById('editWorkersSection').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('editWorkersSection').style.display = 'block';
+            
+            // Cargar cuadrante actual
+            const savedSchedule = store.getItem('currentSchedule');
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule;
+            
+            const dayData = schedule[day] || { conductores: [], pasajeros: [] };
+            
+            // Obtener lista de trabajadores
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            
+            // Generar lista de conductores con checkboxes
+            const conductorsList = document.getElementById('conductorsList');
+            conductorsList.innerHTML = '';
+            
+            allWorkers.forEach(worker => {
+                const isConductor = dayData.conductores.includes(worker);
+                
+                const div = document.createElement('div');
+                div.className = 'worker-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="conductor_${worker}" ${isConductor ? 'checked' : ''}>
+                    <label for="conductor_${worker}">${worker}</label>
+                `;
+                conductorsList.appendChild(div);
+            });
+            
+            // Generar lista de pasajeros con checkboxes
+            const passengersList = document.getElementById('passengersList');
+            passengersList.innerHTML = '';
+            
+            allWorkers.forEach(worker => {
+                const isPassenger = dayData.pasajeros.includes(worker);
+                
+                const div = document.createElement('div');
+                div.className = 'worker-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="passenger_${worker}" ${isPassenger ? 'checked' : ''}>
+                    <label for="passenger_${worker}">${worker}</label>
+                `;
+                passengersList.appendChild(div);
+            });
+        }
+        
+        function saveDayEdit() {
+            const day = document.getElementById('editDaySelect').value;
+            
+            if (!day) {
+                alert('⚠️ Selecciona un día primero');
+                return;
+            }
+            
+            // Obtener trabajadores seleccionados
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            
+            const conductors = [];
+            const passengers = [];
+            
+            allWorkers.forEach(worker => {
+                const conductorCheckbox = document.getElementById(`conductor_${worker}`);
+                const passengerCheckbox = document.getElementById(`passenger_${worker}`);
+                
+                if (conductorCheckbox && conductorCheckbox.checked) {
+                    conductors.push(worker);
+                }
+                
+                if (passengerCheckbox && passengerCheckbox.checked) {
+                    passengers.push(worker);
+                }
+            });
+            
+            // Validar que un trabajador no sea conductor y pasajero a la vez
+            const duplicates = conductors.filter(c => passengers.includes(c));
+            if (duplicates.length > 0) {
+                alert(`⚠️ ${duplicates.join(', ')} no pueden ser conductor y pasajero a la vez`);
+                return;
+            }
+            
+            // Cargar y actualizar cuadrante
+            const savedSchedule = store.getItem('currentSchedule');
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule;
+            
+            schedule[day] = {
+                conductores: conductors,
+                pasajeros: passengers
+            };
+            
+            // Guardar cambios
+            saveSchedule(scheduleData);
+            
+            alert(`✅ ${day} actualizado:\n🚗 Conductores: ${conductores.join(', ') || 'Ninguno'}\n👥 Pasajeros: ${passengers.join(', ') || 'Ninguno'}`);
+            
+            closeEditModal();
+        }
+        
+        function changeCredentials() {
+            const credentials = loadCredentials();
+            
+            // Mostrar modal
+            document.getElementById('currentCredentials').innerHTML = `
+                <div style="margin-bottom: 8px;">• PIN del equipo (todos): <strong>${credentials.teamPin}</strong></div>
+                <div>• Clave admin (solo admin): <strong>${credentials.adminKey}</strong></div>
+            `;
+            document.getElementById('credentialAction').value = '';
+            document.getElementById('newCredentialSection').style.display = 'none';
+            document.getElementById('newCredentialInput').value = '';
+            document.getElementById('credentialsModal').style.display = 'block';
+        }
+        
+        function closeCredentialsModal() {
+            document.getElementById('credentialsModal').style.display = 'none';
+        }
+        
+        async function executeCredentialChange() {
+            const action = document.getElementById('credentialAction').value;
+            const newValue = document.getElementById('newCredentialInput').value.trim();
+            
+            if (!action) {
+                alert('⚠️ Selecciona qué cambiar');
+                return;
+            }
+            
+            try { await store.refresh(true); } catch (e) { alert('❌ ' + e.message); return; }
+            const credentials = loadCredentials();
+            
+            if (action === 'teamPin') {
+                if (!newValue) {
+                    alert('⚠️ Escribe el nuevo PIN');
+                    return;
+                }
+                
+                if (newValue.length !== 4 || !/^\d+$/.test(newValue)) {
+                    alert('❌ El PIN debe tener exactamente 4 dígitos numéricos');
+                    return;
+                }
+                
+                credentials.teamPin = newValue;
+                saveCredentials(credentials);
+                await store.settle();
+                
+                alert('✅ PIN del equipo cambiado correctamente a: ' + newValue + '\n\nEste PIN ahora sirve para trabajadores y administrador.');
+                closeCredentialsModal();
+                
+            } else if (action === 'adminKey') {
+                if (!newValue) {
+                    alert('⚠️ Escribe la nueva clave admin');
+                    return;
+                }
+                
+                if (newValue.length < 4) {
+                    alert('❌ La clave admin debe tener al menos 4 caracteres');
+                    return;
+                }
+                
+                credentials.adminKey = newValue;
+                saveCredentials(credentials);
+                await store.settle();
+                
+                alert('✅ Clave admin cambiada correctamente a: ' + newValue + '\n\nEsta clave solo sirve para acceso administrador.');
+                closeCredentialsModal();
+            }
+        }
+        
+        // Mostrar campo de nuevo valor cuando se selecciona acción
+        document.getElementById('credentialAction').addEventListener('change', function() {
+            const action = this.value;
+            const valueSection = document.getElementById('newCredentialSection');
+            const label = document.getElementById('newCredentialLabel');
+            
+            if (action === 'teamPin') {
+                label.textContent = 'Nuevo PIN (4 dígitos):';
+                valueSection.style.display = 'block';
+            } else if (action === 'adminKey') {
+                label.textContent = 'Nueva clave admin (mínimo 4 caracteres):';
+                valueSection.style.display = 'block';
+            } else {
+                valueSection.style.display = 'none';
+            }
+        });
+                    alert('❌ La clave debe tener al menos 4 caracteres');
+                    return;
+                }
+                
+                const confirmKey = prompt('🔑 Confirma la nueva clave:');
+                if (confirmKey !== newKey) {
+                    alert('❌ Las claves no coinciden');
+                    return;
+                }
+                
+                credentials.adminKey = newKey;
+                saveCredentials(credentials);
+                alert('✅ Clave admin cambiada correctamente a: ' + newKey + '\n\nEsta clave solo sirve para el acceso administrador.');
+                
+            } else if (choice === '3') {
+                alert('🔐 CREDENCIALES ACTUALES\n\n' +
+                      'PIN del equipo (todos): ' + credentials.teamPin + '\n' +
+                      'Clave admin (solo admin): ' + credentials.adminKey);
+            } else {
+                alert('❌ Opción no válida');
+            }
+        }
+        
+        function loadCredentials() {
+            const saved = store.getItem('appCredentials');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            
+            // Credenciales por defecto
+            return {
+                teamPin: '1234',
+                adminKey: 'admin'
+            };
+        }
+        
+        function saveCredentials(credentials) {
+            store.setItem('appCredentials', JSON.stringify(credentials));
+        }
+        
+        function cancelLastSchedule() {
+            const history = JSON.parse(store.getItem('scheduleHistory') || '[]');
+            
+            if (history.length === 0) {
+                alert('🚫 No hay cuadrante generado para cancelar.');
+                return;
+            }
+            
+            const lastEntry = history[history.length - 1];
+            
+            const warningMessage = '🚫 CANCELAR ÚLTIMO CUADRANTE\n\n';
+            warningMessage += 'Esta acción:\n';
+            warningMessage += '• Restaurará los contadores al estado anterior\n';
+            warningMessage += '• Restaurará los marcadores de disponibilidad de cada usuario\n';
+            warningMessage += '• Eliminará el último cuadrante del historial\n';
+            warningMessage += '• Permitirá generar un nuevo cuadrante sin validación\n\n';
+            warningMessage += '¿Estás seguro de que quieres cancelar el cuadrante?\n\n';
+            warningMessage += 'Escribe "CONFIRMAR" para proceder\n';
+            warningMessage += 'o "CANCELAR" para abortar';
+            
+            const confirmation = prompt(warningMessage);
+            
+            if (!confirmation || confirmation.toUpperCase() !== 'CONFIRMAR') {
+                alert('❌ Operación cancelada. El cuadrante sigue activo.');
+                return;
+            }
+            
+            try {
+                // Restaurar contadores al estado anterior
+                if (lastEntry.previousCounters) {
+                    store.setItem('driverCounters', JSON.stringify(lastEntry.previousCounters));
+                    console.log('Contadores restaurados:', lastEntry.previousCounters);
+                }
+                
+                // Restaurar disponibilidad de los trabajadores
+                if (lastEntry.availabilityBefore) {
+                    Object.entries(lastEntry.availabilityBefore).forEach(([worker, days]) => {
+                        store.setItem(`availability_${worker}`, JSON.stringify(days));
+                        console.log(`Disponibilidad restaurada para ${worker}:`, days);
+                    });
+                }
+                
+                // Restaurar marcadores de "no va esta semana"
+                if (lastEntry.notWorkingBefore) {
+                    Object.entries(lastEntry.notWorkingBefore).forEach(([worker, value]) => {
+                        store.setItem(`notWorking_${worker}`, 'true');
+                        console.log(`Marcador "no va" restaurado para ${worker}`);
+                    });
+                }
+                
+                // Eliminar el último cuadrante del historial
+                history.pop();
+                store.setItem('scheduleHistory', JSON.stringify(history));
+                
+                // Eliminar el cuadrante actual
+                store.removeItem('currentSchedule');
+                
+                // Marcar que el cuadrante fue cancelado para permitir generar sin validación
+                store.setItem('canceledSchedule', 'true');
+                
+                // Actualizar interfaz
+                loadCounters();
+                
+                // Recargar disponibilidad del usuario actual si es trabajador
+                if (!isAdmin && currentUser) {
+                    loadAvailability();
+                }
+                
+                document.getElementById('adminLastSchedule').style.display = 'none';
+                displayWorkerSchedule();
+                
+                alert('✅ Cuadrante cancelado correctamente\n\n' +
+                      '• Contadores restaurados al estado anterior\n' +
+                      '• Disponibilidad de usuarios restaurada\n' +
+                      '• Último cuadrante eliminado del historial\n' +
+                      '• Ahora puedes generar un nuevo cuadrante sin validación');
+                
+                console.log('Cuadrante cancelado, contadores y disponibilidad restaurados');
+                
+            } catch (error) {
+                alert('❌ Error al cancelar el cuadrante: ' + error.message);
+                console.error('Error al cancelar:', error);
+            }
+        }
+        
+        function roleCheckboxId(role, day, worker) {
+            return `${role}_${day}_${String(worker).replace(/\s+/g, '_')}`;
+        }
+
+        // Funciones nuevas para edición en tabla y historial
+        function generateEditTable() {
+            const savedSchedule = store.getItem('currentSchedule');
+            
+            if (!savedSchedule) {
+                document.getElementById('scheduleTable').innerHTML = '<div style="color: #ff453a; padding: 20px; text-align: center;">⚠️ No hay cuadrante generado para editar</div>';
+                return;
+            }
+            
+            const scheduleData = JSON.parse(savedSchedule);
+            const schedule = scheduleData.schedule;
+            
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            
+            let tableHTML = '<table style="width: 100%; border-collapse: collapse; font-size: 13px;">';
+            
+            // Cabecera
+            tableHTML += '<thead><tr style="background: rgba(10, 132, 255, 0.2);">';
+            tableHTML += '<th style="padding: 10px; text-align: left; color: #0a84ff; font-weight: 600; width: 80px;">Día</th>';
+            tableHTML += '<th style="padding: 10px; text-align: left; color: #0a84ff; font-weight: 600;">🚗 Conductores</th>';
+            tableHTML += '<th style="padding: 10px; text-align: left; color: #0a84ff; font-weight: 600;">👥 Pasajeros</th>';
+            tableHTML += '</tr></thead><tbody>';
+            
+            // Filas por día
+            days.forEach(day => {
+                const dayData = schedule[day] || { conductores: [], pasajeros: [] };
+                
+                tableHTML += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
+                
+                // Columna Día
+                tableHTML += `<td style="padding: 12px; color: #ffffff; font-weight: 600; vertical-align: top;">${day}</td>`;
+                
+                // Columna Conductores
+                tableHTML += '<td style="padding: 12px; vertical-align: top;">';
+                allWorkers.forEach(worker => {
+                    const isConductor = dayData.conductores.includes(worker);
+                    tableHTML += `
+                        <div style="margin-bottom: 4px;">
+                            <input type="checkbox" id="conductor_${day}_${worker}" ${isConductor ? 'checked' : ''} 
+                                   onchange="preventConflict('${day}', '${worker}', 'conductor')"
+                                   style="width: 16px; height: 16px; margin-right: 6px; accent-color: #0a84ff;">
+                            <label for="conductor_${day}_${worker}" style="color: #ffffff; cursor: pointer; font-size: 12px;">${worker}</label>
+                        </div>
+                    `;
+                });
+                tableHTML += '</td>';
+                
+                // Columna Pasajeros
+                tableHTML += '<td style="padding: 12px; vertical-align: top;">';
+                allWorkers.forEach(worker => {
+                    const isPassenger = dayData.pasajeros.includes(worker);
+                    tableHTML += `
+                        <div style="margin-bottom: 4px;">
+                            <input type="checkbox" id="passenger_${day}_${worker}" ${isPassenger ? 'checked' : ''} 
+                                   onchange="preventConflict('${day}', '${worker}', 'passenger')"
+                                   style="width: 16px; height: 16px; margin-right: 6px; accent-color: #30d158;">
+                            <label for="passenger_${day}_${worker}" style="color: #ffffff; cursor: pointer; font-size: 12px;">${worker}</label>
+                        </div>
+                    `;
+                });
+                tableHTML += '</td>';
+                
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table>';
+            
+            document.getElementById('scheduleTable').innerHTML = tableHTML;
+        }
+        
+        function preventConflict(day, worker, type) {
+            const conductorCheckbox = document.getElementById(`conductor_${day}_${worker}`);
+            const passengerCheckbox = document.getElementById(`passenger_${day}_${worker}`);
+            
+            if (type === 'conductor' && conductorCheckbox.checked) {
+                // Si marca conductor, desmarcar pasajero
+                passengerCheckbox.checked = false;
+            } else if (type === 'passenger' && passengerCheckbox.checked) {
+                // Si marca pasajero, desmarcar conductor
+                conductorCheckbox.checked = false;
+            }
+        }
+        
+        function saveTableEdit() {
+            const savedSchedule = store.getItem('currentSchedule');
+            if (!savedSchedule) {
+                alert('⚠️ No hay cuadrante para guardar');
+                return;
+            }
+            
+            const scheduleData = JSON.parse(savedSchedule);
+            const oldSchedule = JSON.parse(JSON.stringify(scheduleData.schedule)); // Copia del original
+            
+            const counters = loadCountersFromStorage();
+            const allWorkers = Object.keys(counters);
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            
+            // Contador de cambios para ajustar viajes
+            const counterChanges = {};
+            allWorkers.forEach(worker => counterChanges[worker] = 0);
+            
+            // Leer nuevos valores de la tabla
+            const newSchedule = {};
+            days.forEach(day => {
+                newSchedule[day] = { conductores: [], pasajeros: [] };
+                
+                allWorkers.forEach(worker => {
+                    const conductorCheckbox = document.getElementById(`conductor_${day}_${worker}`);
+                    const passengerCheckbox = document.getElementById(`passenger_${day}_${worker}`);
+                    
+                    if (conductorCheckbox && conductorCheckbox.checked) {
+                        newSchedule[day].conductores.push(worker);
+                    }
+                    
+                    if (passengerCheckbox && passengerCheckbox.checked) {
+                        newSchedule[day].pasajeros.push(worker);
+                    }
+                });
+                
+                // Validar que un trabajador no sea conductor y pasajero el mismo día
+                const conflict = newSchedule[day].conductores.filter(w => newSchedule[day].pasajeros.includes(w));
+                if (conflict.length > 0) {
+                    alert(`⚠️ Error: ${conflict.join(', ')} no puede ser conductor y pasajero el mismo día (${day})`);
+                    return;
+                }
+            });
+            
+            // Calcular cambios en contadores
+            days.forEach(day => {
+                const oldConductors = oldSchedule[day]?.conductores || [];
+                const newConductors = newSchedule[day].conductores;
+                
+                // Conductores que se añadieron
+                newConductors.forEach(worker => {
+                    if (!oldConductors.includes(worker)) {
+                        counterChanges[worker]++;
+                    }
+                });
+                
+                // Conductores que se quitaron
+                oldConductors.forEach(worker => {
+                    if (!newConductors.includes(worker)) {
+                        counterChanges[worker]--;
+                    }
+                });
+            });
+            
+            // Aplicar cambios a contadores
+            Object.entries(counterChanges).forEach(([worker, change]) => {
+                if (change !== 0) {
+                    counters[worker] = Math.max(0, counters[worker] + change);
+                    console.log(`${worker}: ${change > 0 ? '+' : ''}${change} viajes (nuevo total: ${counters[worker]})`);
+                }
+            });
+            
+            // Guardar cambios
+            scheduleData.schedule = newSchedule;
+            store.setItem('currentSchedule', JSON.stringify(scheduleData));
+            saveCountersToStorage(counters);
+            
+            // Actualizar displays
+            loadCounters();
+            displayWorkerSchedule();
+            displayAdminLastSchedule();
+            
+            alert('✅ Cuadrante editado correctamente\n\n' + 
+                  Object.entries(counterChanges)
+                    .filter(([w, c]) => c !== 0)
+                    .map(([w, c]) => `${w}: ${c > 0 ? '+' : ''}${c} viajes`)
+                    .join('\n') || 'Sin cambios en contadores');
+            
+            closeEditModal();
+        }
+        
+        function validateEdit(day, worker) {
+            const conductorCheckbox = document.getElementById(`conductor_${day}_${worker}`);
+            const passengerCheckbox = document.getElementById(`passenger_${day}_${worker}`);
+            
+            if (conductorCheckbox.checked && passengerCheckbox.checked) {
+                alert(`⚠️ ${worker} no puede ser conductor y pasajero a la vez en ${day}`);
+                passengerCheckbox.checked = false;
+            }
+        }
+        
+        function calculateCounterChanges(oldSchedule, newSchedule) {
+            const changes = {};
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            
+            days.forEach(day => {
+                const oldConductors = oldSchedule[day]?.conductors || [];
+                const newConductors = newSchedule[day]?.conductors || [];
+                
+                // Conductores que se quitaron
+                oldConductors.forEach(worker => {
+                    if (!newConductors.includes(worker)) {
+                        changes[worker] = (changes[worker] || 0) - 1;
+                    }
+                });
+                
+                // Conductores que se añadieron
+                newConductors.forEach(worker => {
+                    if (!oldConductors.includes(worker)) {
+                        changes[worker] = (changes[worker] || 0) + 1;
+                    }
+                });
+            });
+            
+            return changes;
+        }
+        
+        function showHistory() {
+            const history = JSON.parse(store.getItem('scheduleHistory') || '[]');
+            
+            console.log('Historial encontrado:', history.length, 'registros');
+            
+            if (history.length === 0) {
+                alert('📜 No hay historial de cuadrantes aún.\n\nGenera tu primer cuadrante para empezar el historial.');
+                return;
+            }
+            
+            document.getElementById('historyModal').classList.add('active');
+            
+            let historyHTML = '';
+            
+            history.forEach((entry, index) => {
+                const date = new Date(entry.date).toLocaleString('es-ES');
+                
+                historyHTML += `
+                    <div style="background: rgba(72, 72, 74, 0.6); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2);">
+                        <div style="color: #0a84ff; font-weight: 600; margin-bottom: 12px;">📅 ${date}</div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="color: #98989d; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">📊 Contadores en ese momento:</div>
+                            <div style="color: #ffffff; font-size: 14px;">
+                                ${Object.entries(entry.counters).map(([name, count]) => `${name}: ${count}`).join(', ')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div style="color: #98989d; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">🚗 Cuadrante:</div>
+                            <div style="color: #ffffff; font-size: 13px;">
+                                ${Object.entries(entry.schedule).map(([day, data]) => 
+                                    `${day}: 🚗 ${data.conductores.join(', ') || 'Ninguno'} | 👥 ${data.pasajeros.join(', ') || 'Ninguno'}`
+                                ).join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('historyContent').innerHTML = historyHTML;
+        }
+        
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

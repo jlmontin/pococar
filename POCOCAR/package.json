@@ -1,0 +1,15 @@
+{
+  "name": "pococar",
+  "version": "2.0.0",
+  "description": "POCOCAR - Gestor de turnos con base de datos compartida",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "better-sqlite3": "^11.5.0",
+    "express": "^4.21.0"
+  }
+}
