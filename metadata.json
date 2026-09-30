@@ -1,0 +1,8 @@
+{
+  "name": "POCOCAR",
+  "description": "Sistema para compartir coche con acceso por PIN",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -11,7 +11,7 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -252,4 +252,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error del servidor' });
 });
 
-app.listen(PORT, () => console.log(`POCOCAR funcionando en http://localhost:${PORT}  (datos en ${path.join(DATA_DIR, 'pococar.db')})`));
+app.listen(PORT, '0.0.0.0', () => console.log(`POCOCAR funcionando en http://0.0.0.0:${PORT}  (datos en ${path.join(DATA_DIR, 'pococar.db')})`));

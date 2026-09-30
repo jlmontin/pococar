@@ -4,8 +4,9 @@
   "description": "POCOCAR - Gestor de turnos con base de datos compartida",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "seed": "node seed.js"
+    "dev": "node server.js",
+    "build": "node -e 'console.log(\"Build ready\")'",
+    "start": "node server.js"
   },
   "engines": { "node": ">=18" },
   "dependencies": {
